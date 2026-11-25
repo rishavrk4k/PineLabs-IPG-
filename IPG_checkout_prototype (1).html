@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#06363A">
+<title>IPG checkout concept prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1A2B2D;--deep:#06363A;--teal:#0B4D52;--green:#128A68;--mint:#E7F5EE;--lime:#CDE63C;--coral:#C9533A;--line:#E6ECE9;--muted:#617370;--bg:#F3F6F4;--card:#fff;--r:20px;--shadow:0 1px 2px rgba(6,54,58,.04),0 8px 24px rgba(6,54,58,.06)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{font-family:Poppins,system-ui,sans-serif;color:var(--ink);background:var(--bg);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit}
+.note{background:var(--deep);color:#CFE3DB;font-size:11px;text-align:center;padding:6px 14px;padding-top:max(6px,env(safe-area-inset-top))}
+header{position:sticky;top:0;z-index:20;background:rgba(243,246,244,.9);backdrop-filter:saturate(1.4) blur(12px);-webkit-backdrop-filter:saturate(1.4) blur(12px)}
+.bar{max-width:1060px;margin:0 auto;padding:12px 18px 10px;display:flex;align-items:center;gap:12px}
+.mark{width:34px;height:34px;border-radius:11px;background:linear-gradient(140deg,var(--teal),var(--deep));display:grid;place-items:center;color:var(--lime);font-weight:700;font-size:13px;flex:none}
+.logo{height:20px;width:auto;flex:none;padding-right:12px;margin-right:2px;border-right:1px solid #D3DDD9;box-sizing:content-box}
+.brand{line-height:1.2}
+.brand b{display:block;font-size:15px;color:var(--deep)}
+.brand span{font-size:11.5px;color:var(--muted)}
+.lock{margin-left:auto;font-size:11.5px;color:var(--green);font-weight:600;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.tabs{max-width:1060px;margin:0 auto;padding:0 12px 8px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs a{white-space:nowrap;text-decoration:none;font-size:13px;font-weight:500;color:var(--muted);padding:7px 14px;border-radius:20px}
+.tabs a.on{background:var(--deep);color:#fff}
+main{max-width:1060px;margin:0 auto;padding:6px 18px 40px}
+.view{display:none}.view.on{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.hero{border-radius:var(--r);padding:22px 22px 20px;margin:6px 0 14px;color:#fff;background:radial-gradient(120% 140% at 100% 0%,#1C7A63 0%,rgba(28,122,99,0) 55%),linear-gradient(150deg,var(--teal),var(--deep));position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-40px;top:-40px;width:160px;height:160px;border-radius:50%;border:26px solid rgba(205,230,60,.13)}
+.hero .eyebrow{color:var(--lime);font-size:11.5px;font-weight:600;letter-spacing:.02em}
+.hero h1{font-size:21px;line-height:1.28;font-weight:700;margin-top:6px;max-width:620px;position:relative;z-index:1}
+.hero p{font-size:12.5px;color:#BFD8CF;margin-top:8px;max-width:560px;position:relative;z-index:1}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;position:relative;z-index:1}
+.pills span{font-size:11.5px;font-weight:600;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);padding:4px 10px;border-radius:20px}
+.grid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.col,.sticky,.card{min-width:0}
+@media(min-width:880px){.grid{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);align-items:start}.sticky{position:sticky;top:120px}}
+.col{display:flex;flex-direction:column;gap:14px}
+.card{background:var(--card);border-radius:var(--r);padding:18px;box-shadow:var(--shadow)}
+.card h2{font-size:15px;font-weight:600;color:var(--deep);display:flex;align-items:center;gap:10px}
+.step{width:24px;height:24px;border-radius:50%;background:var(--mint);color:var(--green);font-size:12px;font-weight:700;display:grid;place-items:center;flex:none}
+.hint{color:var(--muted);font-size:12.5px;margin-top:4px}
+.row{display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:9px 0}
+.row+.row{border-top:1px solid var(--line)}
+.row .r{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.small{font-size:12px;color:var(--muted)}
+.green{color:var(--green)}.coral{color:var(--coral)}.deep{color:var(--deep)}
+.strike{text-decoration:line-through;color:#9AA9A6;font-size:12px;display:block}
+.item{display:flex;gap:14px;align-items:center;padding:12px 0}
+.item+.item{border-top:1px solid var(--line)}
+.thumb{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;flex:none}
+.thumb.ph{background:linear-gradient(150deg,#FFE3C6,#F7B98A)}
+.thumb.ap{background:linear-gradient(150deg,#EEF2F1,#CDD8D5)}
+.item .l{flex:1;min-width:0}.item b{font-weight:600;display:block}
+.item .r{text-align:right}
+.badge{display:inline-block;font-size:11px;font-weight:600;color:var(--green);background:var(--mint);border-radius:20px;padding:2px 8px;margin-top:3px}
+.opt{display:flex;gap:12px;align-items:center;padding:12px;margin-top:8px;border-radius:16px;border:1.5px solid var(--line);cursor:pointer;min-height:64px;transition:border-color .15s,background .15s}
+.opt.on{border-color:var(--green);background:var(--mint)}
+.chip{width:46px;height:30px;border-radius:6px;flex:none;position:relative;box-shadow:0 2px 6px rgba(0,0,0,.12)}
+.chip::before{content:"";position:absolute;left:6px;top:9px;width:10px;height:8px;border-radius:2px;background:rgba(255,236,170,.9)}
+.chip i{position:absolute;right:5px;bottom:3px;font-style:normal;font-size:8px;font-weight:700;color:rgba(255,255,255,.92)}
+.opt .l{flex:1;min-width:0}
+.opt b{font-weight:600}
+.opt .save{font-weight:700;color:var(--green);white-space:nowrap;font-size:15px}
+.best{font-size:10.5px;font-weight:700;color:var(--deep);background:var(--lime);border-radius:20px;padding:1px 8px;margin-left:6px;white-space:nowrap}
+.seg{display:flex;gap:8px;margin-top:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.seg::-webkit-scrollbar{display:none}
+.seg button{flex:none;font-size:13px;font-weight:500;border:1.5px solid var(--line);background:#fff;border-radius:14px;padding:9px 14px;cursor:pointer;min-height:44px}
+.seg button.on{background:var(--deep);border-color:var(--deep);color:#fff}
+.seg button:disabled{opacity:.35;cursor:not-allowed}
+.monthly{display:flex;align-items:baseline;justify-content:space-between;margin-top:14px;padding:12px 14px;border-radius:14px;background:var(--bg)}
+.monthly b{font-size:18px;color:var(--deep);white-space:nowrap}
+.total{display:flex;justify-content:space-between;align-items:flex-end;padding:14px 0 2px;margin-top:4px;border-top:2px solid var(--deep)}
+.total .big{font-size:30px;font-weight:700;color:var(--deep);letter-spacing:-.02em;line-height:1}
+.savepill{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:12.5px;font-weight:600;color:var(--green);background:var(--mint);border-radius:20px;padding:5px 12px}
+.compare{margin-top:10px;font-size:12px;color:var(--muted)}
+.compare b{color:var(--coral);font-weight:600}
+.pay{width:100%;font-weight:600;font-size:15.5px;background:var(--deep);color:#fff;border:none;border-radius:16px;padding:15px;margin-top:14px;cursor:pointer;min-height:52px;box-shadow:0 6px 16px rgba(6,54,58,.22)}
+.pay:active{transform:scale(.99)}
+.done{display:none;margin-top:12px;padding:14px;border-radius:14px;background:var(--mint);font-size:13px}
+.done.on{display:block}
+.paybar{display:none}
+.stack{display:flex;height:22px;border-radius:11px;overflow:hidden;margin:14px 0 10px;gap:3px}
+.stack i{display:block;border-radius:6px}
+.legend{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.legend div{font-size:11.5px;color:var(--muted)}
+.legend b{display:block;font-size:15px;color:var(--ink)}
+.legend div::before{content:"";display:block;width:22px;height:4px;border-radius:2px;background:var(--c);margin-bottom:6px}
+.list{list-style:none}
+.list li{padding:11px 0;display:flex;gap:12px}
+.list li+li{border-top:1px solid var(--line)}
+.num{width:26px;height:26px;border-radius:9px;background:var(--mint);color:var(--green);font-weight:700;font-size:12px;display:grid;place-items:center;flex:none}
+.list b{font-weight:600}
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.kpi{background:#fff;border-radius:16px;padding:12px;box-shadow:var(--shadow)}
+.kpi b{display:block;font-size:18px;color:var(--deep);line-height:1.2}
+.kpi span{font-size:11px;color:var(--muted)}
+.bar-row{display:grid;grid-template-columns:84px 1fr;gap:10px;align-items:center;margin:12px 0}
+.track{position:relative;height:30px;background:var(--bg);border-radius:9px}
+.fill{height:100%;border-radius:9px;display:flex;align-items:center;padding-left:10px;color:#fff;font-size:11.5px;font-weight:600;white-space:nowrap}
+.ghost{position:absolute;top:0;height:100%;border-radius:0 9px 9px 0;background:repeating-linear-gradient(135deg,rgba(18,138,104,.18) 0 6px,rgba(18,138,104,.06) 6px 12px);border:1.5px dashed var(--green);border-left:none}
+.target{position:absolute;top:-8px;bottom:-8px;border-left:2px dashed var(--deep)}
+.target span{position:absolute;bottom:-20px;left:-34px;font-size:11px;font-weight:700;color:var(--deep);white-space:nowrap}
+.toggle{width:46px;height:28px;border-radius:14px;background:#C9D4D1;position:relative;cursor:pointer;flex:none;border:none}
+.toggle::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:.15s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle.on{background:var(--green)}
+.toggle.on::after{left:21px}
+.who{font-size:11.5px;color:var(--muted)}
+.bubble{background:var(--deep);color:#fff;border-radius:18px 18px 18px 6px;padding:14px 16px;margin-top:12px;font-size:14px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.chips span{font-size:12px;background:var(--bg);border-radius:20px;padding:5px 11px;font-weight:500}
+.steps{list-style:none;margin-top:12px}
+.steps li{padding:8px 0;color:#A8B5B2;display:flex;gap:10px;align-items:flex-start;transition:color .3s}
+.steps li.on{color:var(--ink)}
+.steps .tick{width:22px;height:22px;border-radius:50%;border:1.5px solid #C9D4D1;flex:none;display:grid;place-items:center;font-size:12px;font-weight:700;margin-top:1px}
+.steps li.on .tick{background:var(--green);border-color:var(--green);color:#fff}
+.quote{display:flex;justify-content:space-between;gap:12px;padding:12px;border-radius:14px;margin-top:8px;border:1.5px solid var(--line)}
+.quote.pick{border-color:var(--green);background:var(--mint)}
+.quote b{font-weight:600}
+.quote .r{text-align:right;white-space:nowrap;font-weight:700;font-size:15px}
+.result{display:none;margin-top:12px;padding:14px;border-radius:14px;background:var(--deep);color:#fff;font-size:13px}
+.result.on{display:block}
+.stepper{list-style:none;position:relative}
+.stepper li{position:relative;padding:0 0 18px 40px}
+.stepper li::before{content:attr(data-n);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;background:var(--deep);color:#fff;font-weight:700;font-size:12px;display:grid;place-items:center}
+.stepper li::after{content:"";position:absolute;left:13px;top:30px;bottom:2px;width:2px;background:var(--line)}
+.stepper li:last-child::after{display:none}
+.stepper h3{font-size:14.5px;font-weight:600;color:var(--deep)}
+.field{display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap}
+.field input{font:inherit;font-size:14px;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;width:170px;background:var(--bg);color:var(--muted)}
+.pick{font-size:13px;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:9px 14px;cursor:pointer;min-height:42px}
+.pick.on{border-color:var(--green);color:var(--deep);background:var(--mint);font-weight:600}
+.picks{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.check{display:flex;gap:10px;align-items:flex-start;padding:6px 0;cursor:pointer}
+.check input{margin-top:4px;width:18px;height:18px;accent-color:var(--green)}
+footer{max-width:1060px;margin:0 auto;padding:16px 18px 24px;color:var(--muted);font-size:11px}
+nav.bottom{display:none}
+@media(max-width:700px){
+  .tabs{display:none}
+  main{padding:4px 14px 150px}
+  .hero{padding:20px 18px 18px}.hero h1{font-size:19px}
+  .card{padding:16px}
+  .kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.kpi b{font-size:16px}
+  #s-summary .pay{display:none}
+  .paybar.show{display:flex;position:fixed;left:10px;right:10px;bottom:calc(74px + env(safe-area-inset-bottom));z-index:30;background:#fff;border-radius:18px;padding:10px 10px 10px 16px;align-items:center;gap:12px;box-shadow:0 10px 30px rgba(6,54,58,.18)}
+  .paybar .t{flex:1;line-height:1.2}.paybar .t span{font-size:11px;color:var(--muted)}.paybar .t b{display:block;font-size:19px;color:var(--deep)}
+  .paybar .pay{width:auto;margin:0;padding:12px 20px;min-height:46px;box-shadow:none}
+  nav.bottom{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:6px 4px calc(8px + env(safe-area-inset-bottom))}
+  nav.bottom a{flex:1;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;font-weight:500;color:#8A9A97;padding:4px 0}
+  nav.bottom a svg{width:22px;height:22px}
+  nav.bottom a.on{color:var(--deep)}
+  nav.bottom a.on svg{color:var(--green)}
+  footer{padding-bottom:160px}
+}
+</style>
+</head>
+<body>
+<div class="note">Concept prototype. Northbridge is fictional; offers and figures are sample data; no payment is taken.</div>
+<header>
+  <div class="bar">
+    <img class="logo" src="data:image/png;base64,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" alt="Pine Labs">
+    <div class="brand"><b>Northbridge</b><span>Checkout on IPG, a concept</span></div>
+    <div class="lock"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Secure</div>
+  </div>
+  <div class="tabs" id="tabs">
+    <a href="#checkout" data-v="checkout">Checkout</a>
+    <a href="#who-pays" data-v="who-pays">Who pays</a>
+    <a href="#merchant" data-v="merchant">Merchant pilot</a>
+    <a href="#agent" data-v="agent">AI agent</a>
+    <a href="#go-live" data-v="go-live">Go live</a>
+  </div>
+</header>
+<main>
+
+<!-- ======================= CHECKOUT ======================= -->
+<section class="view" id="v-checkout">
+  <div class="hero">
+    <div class="eyebrow">Shopper view</div>
+    <h1>Her card offer comes off before she pays, not on next month's statement.</h1>
+    <div class="pills"><span>Lead: instant discount</span><span>Brand offers on items</span><span>0% IPP</span></div>
+  </div>
+  <div class="grid">
+    <div class="col">
+      <div class="card" id="s-cart">
+        <h2><span class="step">1</span>Your cart</h2>
+        <div class="item">
+          <div class="thumb ph"><svg width="22" height="34" viewBox="0 0 22 34"><rect x="1" y="1" width="20" height="32" rx="5" fill="#fff" stroke="#C4784A" stroke-width="1.5"/><rect x="8" y="3.5" width="6" height="2" rx="1" fill="#C4784A"/></svg></div>
+          <div class="l"><b>iPhone 17 Pro, 256GB</b><span class="badge">Brand offer, 15% off</span></div>
+          <div class="r"><span class="strike">S$1,749</span><b>S$1,487</b></div>
+        </div>
+        <div class="item">
+          <div class="thumb ap"><svg width="30" height="26" viewBox="0 0 30 26"><circle cx="9" cy="8" r="6" fill="#fff" stroke="#93A5A1" stroke-width="1.5"/><rect x="7" y="12" width="4" height="12" rx="2" fill="#fff" stroke="#93A5A1" stroke-width="1.5"/><circle cx="21" cy="8" r="6" fill="#fff" stroke="#93A5A1" stroke-width="1.5"/><rect x="19" y="12" width="4" height="12" rx="2" fill="#fff" stroke="#93A5A1" stroke-width="1.5"/></svg></div>
+          <div class="l"><b>AirPods Pro 3</b><span class="badge">Brand offer, 30% off</span></div>
+          <div class="r"><span class="strike">S$349</span><b>S$244</b></div>
+        </div>
+      </div>
+      <div class="card" id="s-pay">
+        <h2><span class="step">2</span>Pay with</h2>
+        <div class="hint">Ranked by what you save today. Your card's offer comes off before you pay.</div>
+        <div id="cards"></div>
+      </div>
+      <div class="card" id="s-ipp">
+        <h2><span class="step">3</span>Pay in full or in instalments</h2>
+        <div class="hint">0% instalments from your own bank. Pine Labs lends nothing.</div>
+        <div class="seg" id="ipp"></div>
+        <div class="monthly"><div><div class="small" id="ippNote"></div></div><b id="ippAmt"></b></div>
+      </div>
+    </div>
+    <div class="sticky">
+      <div class="card" id="s-summary">
+        <h2>Order summary</h2>
+        <div style="margin-top:6px">
+          <div class="row"><div>Items at list price</div><div class="r">S$2,098</div></div>
+          <div class="row"><div class="green">Brand offers</div><div class="r green">−S$367</div></div>
+          <div class="row"><div class="green" id="bankLbl">DBS card offer, applied now</div><div class="r green" id="bankAmt">−S$80</div></div>
+          <div class="row"><div>Delivery</div><div class="r">Free</div></div>
+        </div>
+        <div class="total"><div><div class="small">You pay today</div><div class="small">GST included</div></div><div class="big" id="total">S$1,651</div></div>
+        <div class="savepill" id="saved">You save S$447 before you pay</div>
+        <div class="compare" id="compare"></div>
+        <button class="pay" id="payBtn">Pay S$1,651</button>
+        <div class="done" id="done"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= WHO PAYS ======================= -->
+<section class="view" id="v-who-pays">
+  <div class="hero">
+    <div class="eyebrow">Money view, the same cart</div>
+    <h1>Banks and brands pay for the discount. The merchant keeps its margin.</h1>
+  </div>
+  <div class="grid">
+    <div class="col">
+      <div class="card" id="s-who">
+        <h2>Who pays for what</h2>
+        <div class="stack"><i style="flex:1651;background:var(--deep)"></i><i style="flex:80;background:var(--lime);min-width:14px"></i><i style="flex:367;background:var(--green)"></i></div>
+        <div class="legend"><div style="--c:var(--deep)"><b>S$1,651</b>Shopper</div><div style="--c:var(--lime)"><b>S$80</b>Her bank</div><div style="--c:var(--green)"><b>S$367</b>Brand</div></div>
+        <div style="margin-top:12px">
+          <div class="row"><div>Items at list price</div><div class="r">S$2,098</div></div>
+          <div class="row"><div>Brand offers, paid by the brand<div class="small">Claimed automatically, paid monthly</div></div><div class="r green">S$367</div></div>
+          <div class="row"><div>Card offer, paid by DBS<div class="small">On the next-day settlement line</div></div><div class="r green">S$80</div></div>
+          <div class="row"><div><b>Shopper pays today</b><div class="small">Or 12 × S$137.59 at 0% with DBS</div></div><div class="r"><b>S$1,651</b></div></div>
+          <div class="row"><div>Card fee, paid by Northbridge<div class="small">Illustrative online rate</div></div><div class="r coral">−S$48.38</div></div>
+        </div>
+        <div class="total"><div><b>Northbridge receives</b><div class="small">Next working day</div></div><div class="big" style="font-size:24px">S$2,049.62</div></div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <h2>Why each side says yes</h2>
+        <ul class="list" style="margin-top:4px">
+          <li><span class="num">1</span><div><b>Her bank</b> wins a card customer at the moment of purchase, and its name is on the saving.</div></li>
+          <li><span class="num">2</span><div><b>The brand</b> moves the exact model it chose, on its reseller's own site.</div></li>
+          <li><span class="num">3</span><div><b>Northbridge</b> wins back the marketplace sale, margin whole.</div></li>
+          <li><span class="num">4</span><div><b>The shopper</b> saves S$447 before paying, with no claim forms.</div></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>If something goes wrong</h2>
+        <ul class="list" style="margin-top:4px">
+          <li><span class="num">1</span><div><b>The bank can't book the plan.</b> She sees it before paying and picks again.</div></li>
+          <li><span class="num">2</span><div><b>A payout is late.</b> The tracker shows the missing line first.</div></li>
+          <li><span class="num">3</span><div><b>A partial return.</b> Each offer is reversed pro rata, so every funder gets its share back.</div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= MERCHANT ======================= -->
+<section class="view" id="v-merchant">
+  <div class="hero">
+    <div class="eyebrow">Merchant view, pilot day 24 of 60, sample data</div>
+    <h1>One question for the pilot: do instant offers lift completed orders by 10%?</h1>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><b>3</b><span>anchor brands live</span></div>
+    <div class="kpi"><b>8,206</b><span>checkout visits</span></div>
+    <div class="kpi"><b>Day 60</b><span>result read</span></div>
+  </div>
+  <div class="grid">
+    <div class="col">
+      <div class="card" id="m-test">
+        <h2>Split test</h2>
+        <div class="hint">Half of visits get the card offer as a rebate next month; half get it off the price. Same offer value.</div>
+        <div class="bar-row"><div class="coral" style="font-weight:600;font-size:13px">Rebate (A)</div><div class="track"><div class="fill" style="width:76%;background:var(--coral)">today's way, 100</div></div></div>
+        <div class="bar-row" style="margin-bottom:26px"><div class="green" style="font-weight:600;font-size:13px">Instant (B)</div><div class="track"><div class="fill" style="width:76%;background:var(--green)">IPG</div><div class="ghost" style="left:76%;width:7.6%"></div><div class="target" style="left:83.6%"><span>+10% target</span></div></div></div>
+        <div class="row"><div class="small">If there is no lift by Day 60</div><div class="r coral" style="font-weight:600">Stop full-checkout sales</div></div>
+      </div>
+      <div class="card" id="m-offers">
+        <h2>Offers live on this checkout</h2>
+        <div class="hint">Each offer shows who funds it. Switch one off and it leaves the checkout at once.</div>
+        <div id="offers" style="margin-top:6px"></div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card" id="m-pay">
+        <h2>Payouts, traced line by line</h2>
+        <div style="margin-top:6px">
+          <div class="row"><div>Card payments, 412 orders</div><div class="r">S$96,310.40</div></div>
+          <div class="row"><div>Bank offers reimbursed<div class="small">DBS, next working day</div></div><div class="r green">+S$6,240.00</div></div>
+          <div class="row"><div>Card fees</div><div class="r coral">−S$2,215.14</div></div>
+        </div>
+        <div class="total"><div><b>Paid 25 Nov, 10:02</b><div class="small">To DBS •• 0921</div></div><div class="big" style="font-size:22px">S$100,335.26</div></div>
+        <div style="margin-top:10px">
+          <div class="row"><div class="small">Brand claims, paid monthly</div><div class="r">Next on 5 Dec</div></div>
+          <div class="row"><div class="small">On time so far</div><div class="r green" style="font-weight:600">24 of 24 payouts</div></div>
+          <div class="row"><div class="small">If a payout is late</div><div class="r">Alert with the missing line</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Already on Stripe?</h2>
+        <div class="hint">Keep it. The same bank and brand offers and 0% instalments run on your Stripe checkout through the Pine Labs and Stripe tie-up.</div>
+      </div>
+      <div class="card">
+        <h2>Your named contact</h2>
+        <div class="hint">Mei Tan, account manager, 9am to 9pm. A person, not a chatbot.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= AGENT ======================= -->
+<section class="view" id="v-agent">
+  <div class="hero">
+    <div class="eyebrow">AI agent view</div>
+    <h1>An agent buys on the price it can check at checkout. Rebates don't count.</h1>
+  </div>
+  <div class="grid">
+    <div class="col">
+      <div class="card" id="a-run">
+        <h2>A shopper asks her AI assistant</h2>
+        <div class="bubble">"Buy the iPhone 17 Pro and AirPods Pro 3 at the best total price, delivered by Friday. Use my DBS card."</div>
+        <div class="chips"><span>Budget S$1,800</span><span>DBS Visa •• 4417</span><span>By Fri 28 Nov</span><span>Card token</span></div>
+        <button class="pay" id="runAgent">Run the agent</button>
+        <ol class="steps" id="steps">
+          <li><span class="tick">1</span>Searches three Singapore stores for both items</li>
+          <li><span class="tick">2</span>Gets a checkout quote from each store</li>
+          <li><span class="tick">3</span>Counts only discounts applied at checkout; rebates paid later are ignored</li>
+          <li><span class="tick">4</span>Picks the lowest final price that meets the date</li>
+          <li><span class="tick">5</span>Pays with a tokenised DBS card and sends the receipt</li>
+        </ol>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card" id="a-quotes">
+        <h2>Quotes the agent compares</h2>
+        <div class="quote pick"><div><b>Northbridge, on IPG</b><div class="small">Offers applied at checkout</div></div><div class="r deep">S$1,651</div></div>
+        <div class="quote"><div><b>Store B</b><div class="small">S$80 rebate next month, not counted</div></div><div class="r">S$1,731</div></div>
+        <div class="quote"><div><b>Marketplace C</b><div class="small">Sample quote</div></div><div class="r">S$1,689</div></div>
+        <div class="result" id="agentResult"><b>Bought from Northbridge for S$1,651</b> with a tokenised DBS card. Delivery Thu 27 Nov. Receipt sent.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= GO LIVE ======================= -->
+<section class="view" id="v-go-live">
+  <div class="hero">
+    <div class="eyebrow">Merchant sign-up</div>
+    <h1>Go live on IPG within days. No setup fee, one online rate.</h1>
+  </div>
+  <div class="grid">
+    <div class="col">
+      <div class="card" id="g-steps">
+        <ol class="stepper">
+          <li data-n="1"><h3>Your business</h3><div class="hint">We pull your company details from your UEN.</div>
+            <div class="field"><input value="201912345K" disabled aria-label="Sample UEN"><span class="small green" style="font-weight:600">Sample business verified</span></div></li>
+          <li data-n="2"><h3>Connect your store</h3><div class="picks" id="platforms"></div>
+            <div class="hint" style="margin-top:8px">On Stripe already? Keep it, and add IPG's offers on top.</div></li>
+          <li data-n="3"><h3>Choose your offers</h3>
+            <label class="check"><input type="checkbox" checked><span><b>Bank card offers</b><br><span class="small">Funded by the bank, starting with DBS</span></span></label>
+            <label class="check"><input type="checkbox" checked><span><b>Brand offers on items</b><br><span class="small">Funded by the brand, on the exact item</span></span></label>
+            <label class="check"><input type="checkbox" checked><span><b>0% instalments</b><br><span class="small">From the shopper's own bank, 3 to 24 months</span></span></label></li>
+        </ol>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <h2>Review and go live</h2>
+        <div style="margin-top:6px">
+          <div class="row"><div>Setup fee</div><div class="r green" style="font-weight:600">None</div></div>
+          <div class="row"><div>Online card rate</div><div class="r">One rate, all cards</div></div>
+          <div class="row"><div>Who funds discounts</div><div class="r">Banks and brands</div></div>
+          <div class="row"><div>Payouts</div><div class="r">Next working day</div></div>
+          <div class="row"><div>Approval target</div><div class="r">3 business days</div></div>
+        </div>
+        <button class="pay" id="goLive">Request go-live</button>
+        <div class="done" id="liveDone"><b class="green">Request received (sample).</b> Your account manager will confirm the checks and your first offers.</div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+<footer>Concept prototype by Rishav Kundu. Not a Pine Labs product. Prices are Singapore list prices; offers and every other figure are illustrative.</footer>
+
+<div class="paybar" id="paybar"><div class="t"><span>You pay today</span><b id="barTotal">S$1,651</b></div><button class="pay" id="barPay">Pay now</button></div>
+
+<nav class="bottom" id="bottom">
+  <a href="#checkout" data-v="checkout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.5 10h-11z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>Checkout</a>
+  <a href="#who-pays" data-v="who-pays"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><path d="M12 4v8l6 4"/></svg>Who pays</a>
+  <a href="#merchant" data-v="merchant"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 19V11M12 19V5M19 19v-6"/></svg>Pilot</a>
+  <a href="#agent" data-v="agent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="11" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01"/></svg>AI agent</a>
+  <a href="#go-live" data-v="go-live"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>Go live</a>
+</nav>
+
+<script>
+const fmt = (v) => { const w = Math.abs(v - Math.round(v)) < 0.005; return "S$" + v.toLocaleString("en-SG", { minimumFractionDigits: w ? 0 : 2, maximumFractionDigits: w ? 0 : 2 }); };
+const LIST = 2098, BRAND = 367;
+const CARDS = [
+  { id: "dbs", name: "DBS Visa", last: "4417", save: 80, ipp: true, best: true, g: "linear-gradient(135deg,#B3261E,#6E1410)", k: "VISA" },
+  { id: "uob", name: "UOB Mastercard", last: "2290", save: 60, ipp: true, g: "linear-gradient(135deg,#1B3F8B,#0C2152)", k: "MC" },
+  { id: "ocbc", name: "OCBC Visa", last: "8831", save: 40, ipp: true, g: "linear-gradient(135deg,#3B3F44,#141618)", k: "VISA" },
+  { id: "paynow", name: "PayNow", last: "", save: 0, ipp: false, g: "linear-gradient(135deg,#7A3E9D,#4B1F66)", k: "PN" }];
+const PLANS = [0, 3, 6, 12, 24];
+let card = "dbs", plan = 12;
+const totalFor = (c) => LIST - BRAND - c.save;
+const monthly = (t, p) => Math.ceil(t / p * 100) / 100;
+
+function renderCards() {
+  document.getElementById("cards").innerHTML = CARDS.map((c) => `
+    <div class="opt ${c.id === card ? "on" : ""}" data-c="${c.id}" role="button" tabindex="0">
+      <div class="chip" style="background:${c.g}"><i>${c.k}</i></div>
+      <div class="l"><b>${c.name}</b>${c.last ? ` <span class="small">•• ${c.last}</span>` : ""}${c.best ? '<span class="best">Best here</span>' : ""}
+        <div class="small">${c.save ? "Card offer, off before you pay" : "No card offer"}</div></div>
+      <div class="save">${c.save ? "−S$" + c.save : ""}</div>
+    </div>`).join("");
+  document.querySelectorAll(".opt").forEach((o) => o.onclick = () => { card = o.dataset.c; if (!CARDS.find((c) => c.id === card).ipp) plan = 0; update(); });
+}
+function centerPlan() {
+  const seg = document.getElementById("ipp"), sel = seg.querySelector(".on");
+  if (sel && seg.clientWidth) seg.scrollLeft = Math.max(0, sel.getBoundingClientRect().left - seg.getBoundingClientRect().left + seg.scrollLeft - seg.clientWidth / 2 + sel.clientWidth / 2);
+}
+function update() {
+  const c = CARDS.find((x) => x.id === card), t = totalFor(c), bank = c.name.split(" ")[0];
+  renderCards();
+  document.getElementById("ipp").innerHTML = PLANS.map((p) => `<button class="${p === plan ? "on" : ""}" data-p="${p}" ${!c.ipp && p ? "disabled" : ""}>${p ? p + " months" : "In full"}</button>`).join("");
+  document.querySelectorAll("#ipp button").forEach((b) => b.onclick = () => { plan = +b.dataset.p; update(); });
+  centerPlan();
+  document.getElementById("ippNote").textContent = plan ? `${plan} months at 0%, confirmed with ${bank} before you pay` : (c.ipp ? "Pay the full amount today" : "Instalments need a card");
+  document.getElementById("ippAmt").textContent = plan ? `${plan} × ${fmt(monthly(t, plan))}` : fmt(t);
+  document.getElementById("bankLbl").textContent = c.save ? `${bank} card offer, applied now` : "Card offer";
+  document.getElementById("bankAmt").textContent = c.save ? "−" + fmt(c.save) : "None";
+  document.getElementById("total").textContent = fmt(t);
+  document.getElementById("barTotal").textContent = fmt(t);
+  document.getElementById("saved").textContent = `You save ${fmt(BRAND + c.save)} before you pay`;
+  document.getElementById("compare").innerHTML = c.save ? `On a typical checkout: <b>${fmt(t + c.save)}</b> today, and ${fmt(c.save)} back on next month's statement.` : "";
+  document.getElementById("payBtn").textContent = "Pay " + fmt(t);
+  document.getElementById("done").classList.remove("on");
+}
+function pay() {
+  const c = CARDS.find((x) => x.id === card), t = totalFor(c);
+  const d = document.getElementById("done");
+  d.innerHTML = `<b class="green">Order confirmed (sample).</b><div class="small" style="margin-top:4px">Paid ${fmt(t)} with ${c.name}${c.last ? " •• " + c.last : ""}. Saved ${fmt(BRAND + c.save)} before paying.${plan ? ` ${plan} × ${fmt(monthly(t, plan))} at 0%, booked by ${c.name.split(" ")[0]}.` : ""} Northbridge is paid the next working day.</div>`;
+  d.classList.add("on");
+  d.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+document.getElementById("payBtn").onclick = pay;
+document.getElementById("barPay").onclick = pay;
+
+const OFFERS = [
+  ["iPhone 17 Pro, 15% off", "the brand", true], ["AirPods Pro 3, 30% off", "the brand", true],
+  ["DBS cards, S$80 off above S$1,000", "DBS, pilot cost shared with the brand", true],
+  ["UOB cards, S$60 off above S$1,000", "UOB, from Day 60", false], ["OCBC cards, S$40 off above S$1,000", "OCBC, from Day 60", false],
+  ["0% instalments, 3 to 24 months", "the shopper's own bank", true]];
+document.getElementById("offers").innerHTML = OFFERS.map((o, i) => `
+  <div class="row" style="align-items:center"><div>${o[0]}<div class="who">Funded by ${o[1]}</div></div><button class="toggle ${o[2] ? "on" : ""}" aria-label="Switch ${o[0]}" data-i="${i}"></button></div>`).join("");
+document.querySelectorAll(".toggle").forEach((t) => t.onclick = () => t.classList.toggle("on"));
+
+document.getElementById("platforms").innerHTML = ["Shopify", "WooCommerce", "Magento", "API"].map((p, i) => `<button class="pick ${i === 0 ? "on" : ""}">${p}</button>`).join("");
+document.querySelectorAll("#platforms .pick").forEach((b) => b.onclick = () => { document.querySelectorAll("#platforms .pick").forEach((x) => x.classList.remove("on")); b.classList.add("on"); });
+document.getElementById("goLive").onclick = () => document.getElementById("liveDone").classList.add("on");
+
+function runAgent(instant) {
+  const li = [...document.querySelectorAll("#steps li")];
+  li.forEach((l) => { l.classList.remove("on"); l.querySelector(".tick").textContent = l.dataset.n || l.querySelector(".tick").textContent; });
+  document.getElementById("agentResult").classList.remove("on");
+  li.forEach((l, i) => setTimeout(() => { l.classList.add("on"); l.querySelector(".tick").textContent = "✓"; if (i === li.length - 1) document.getElementById("agentResult").classList.add("on"); }, instant ? 0 : 450 * (i + 1)));
+}
+document.querySelectorAll("#steps li").forEach((l, i) => l.dataset.n = String(i + 1));
+document.getElementById("runAgent").onclick = () => runAgent(false);
+window.runAgentNow = () => runAgent(true);
+
+const VIEWS = ["checkout", "who-pays", "merchant", "agent", "go-live"];
+function route() {
+  let v = (location.hash || "#checkout").slice(1);
+  if (!VIEWS.includes(v)) v = "checkout";
+  VIEWS.forEach((x) => document.getElementById("v-" + x).classList.toggle("on", x === v));
+  document.querySelectorAll("#tabs a, #bottom a").forEach((a) => a.classList.toggle("on", a.dataset.v === v));
+  document.getElementById("paybar").classList.toggle("show", v === "checkout");
+  window.scrollTo(0, 0);
+  if (v === "checkout") requestAnimationFrame(centerPlan);
+}
+window.addEventListener("hashchange", route);
+update(); route();
+</script>
+</body>
+</html>
